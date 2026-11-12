@@ -1,0 +1,1136 @@
+{
+  "info": {
+    "name": "AutoLoc API",
+    "description": "Collection de tests AutoLoc. Lancer l'application puis exécuter les dossiers dans l'ordre (ou Collection Runner).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8082/autoloc"
+    },
+    {
+      "key": "agenceId",
+      "value": ""
+    },
+    {
+      "key": "vehiculeId",
+      "value": ""
+    },
+    {
+      "key": "clientId",
+      "value": ""
+    },
+    {
+      "key": "equipementId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1 - Agence",
+      "item": [
+        {
+          "name": "POST AddAgence",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201 Created\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Id généré\", function () { pm.expect(pm.response.json().idAgence).to.be.a(\"number\"); });",
+                  "pm.collectionVariables.set(\"agenceId\", pm.response.json().idAgence);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/AddAgence",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "AddAgence"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"AutoLoc Tunis\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"Avenue Habib Bourguiba\",\n  \"telephone\": \"71000000\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST addAllAgence",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201 Created\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Liste de 2 éléments\", function () { pm.expect(pm.response.json()).to.have.lengthOf(2); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/addAllAgence",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "addAllAgence"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\"nom\": \"AutoLoc Sfax\", \"ville\": \"Sfax\", \"adresse\": \"Route de Tunis\", \"telephone\": \"74000000\"},\n  {\"nom\": \"AutoLoc Sousse\", \"ville\": \"Sousse\", \"adresse\": \"Boulevard 14 Janvier\", \"telephone\": \"73000000\"}\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET GetAgence (tous)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Réponse = tableau\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetAgence",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetAgence"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetAgence/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Bon identifiant\", function () { pm.expect(pm.response.json().idAgence).to.eql(Number(pm.collectionVariables.get(\"agenceId\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetAgence/{{agenceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetAgence",
+                "{{agenceId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetAgence/999999 (inexistant)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404 Not Found\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Message d'erreur présent\", function () { pm.expect(pm.response.json()).to.have.property(\"erreur\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetAgence/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetAgence",
+                "999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT UpdateAgence/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Identifiant conservé\", function () { pm.expect(pm.response.json().idAgence).to.eql(Number(pm.collectionVariables.get(\"agenceId\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/UpdateAgence/{{agenceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "UpdateAgence",
+                "{{agenceId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"AutoLoc Tunis Centre\",\n  \"ville\": \"Tunis\",\n  \"adresse\": \"Avenue de la Liberté\",\n  \"telephone\": \"71111111\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2 - Vehicule",
+      "item": [
+        {
+          "name": "POST AddVehicule",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201 Created\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Id généré\", function () { pm.expect(pm.response.json().idVehicule).to.be.a(\"number\"); });",
+                  "pm.collectionVariables.set(\"vehiculeId\", pm.response.json().idVehicule);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/AddVehicule",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "AddVehicule"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"immatriculation\": \"TN{{$timestamp}}\",\n  \"marque\": \"Peugeot\",\n  \"modele\": \"208\",\n  \"categorie\": \"CITADINE\",\n  \"tarifJournalier\": 85.50,\n  \"statut\": \"DISPONIBLE\",\n  \"agence\": {\"idAgence\": {{agenceId}}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST addAllVehicule",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201 Created\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Liste de 2 éléments\", function () { pm.expect(pm.response.json()).to.have.lengthOf(2); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/addAllVehicule",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "addAllVehicule"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\"immatriculation\": \"TNA{{$timestamp}}\", \"marque\": \"Renault\", \"modele\": \"Clio\", \"categorie\": \"CITADINE\", \"tarifJournalier\": 70.00, \"statut\": \"DISPONIBLE\"},\n  {\"immatriculation\": \"TNB{{$timestamp}}\", \"marque\": \"Toyota\", \"modele\": \"Hilux\", \"categorie\": \"UTILITAIRE\", \"tarifJournalier\": 130.00, \"statut\": \"DISPONIBLE\"}\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET GetVehicule (tous)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Réponse = tableau\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetVehicule",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetVehicule"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetVehicule/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Bon identifiant\", function () { pm.expect(pm.response.json().idVehicule).to.eql(Number(pm.collectionVariables.get(\"vehiculeId\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetVehicule/{{vehiculeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetVehicule",
+                "{{vehiculeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetVehicule/999999 (inexistant)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404 Not Found\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Message d'erreur présent\", function () { pm.expect(pm.response.json()).to.have.property(\"erreur\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetVehicule/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetVehicule",
+                "999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT UpdateVehicule/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Identifiant conservé\", function () { pm.expect(pm.response.json().idVehicule).to.eql(Number(pm.collectionVariables.get(\"vehiculeId\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/UpdateVehicule/{{vehiculeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "UpdateVehicule",
+                "{{vehiculeId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"immatriculation\": \"TNM{{$timestamp}}\",\n  \"marque\": \"Peugeot\",\n  \"modele\": \"208\",\n  \"categorie\": \"CITADINE\",\n  \"tarifJournalier\": 95.00,\n  \"statut\": \"LOUE\",\n  \"agence\": {\"idAgence\": {{agenceId}}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3 - Client",
+      "item": [
+        {
+          "name": "POST AddClient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201 Created\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Id généré\", function () { pm.expect(pm.response.json().idClient).to.be.a(\"number\"); });",
+                  "pm.collectionVariables.set(\"clientId\", pm.response.json().idClient);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/AddClient",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "AddClient"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Ben Ali\",\n  \"prenom\": \"Sami\",\n  \"email\": \"client{{$timestamp}}@example.com\",\n  \"telephone\": \"20123456\",\n  \"numPermis\": \"P{{$timestamp}}\",\n  \"dateInscription\": \"2026-10-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST addAllClient",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201 Created\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Liste de 2 éléments\", function () { pm.expect(pm.response.json()).to.have.lengthOf(2); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/addAllClient",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "addAllClient"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\"nom\": \"Trabelsi\", \"prenom\": \"Amel\", \"email\": \"bulk1-{{$timestamp}}@example.com\", \"telephone\": \"21000001\", \"numPermis\": \"BA{{$timestamp}}\", \"dateInscription\": \"2026-10-02\"},\n  {\"nom\": \"Gharbi\", \"prenom\": \"Youssef\", \"email\": \"bulk2-{{$timestamp}}@example.com\", \"telephone\": \"21000002\", \"numPermis\": \"BB{{$timestamp}}\", \"dateInscription\": \"2026-10-03\"}\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET GetClient (tous)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Réponse = tableau\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetClient",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetClient"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetClient/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Bon identifiant\", function () { pm.expect(pm.response.json().idClient).to.eql(Number(pm.collectionVariables.get(\"clientId\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetClient/{{clientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetClient",
+                "{{clientId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetClient/999999 (inexistant)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404 Not Found\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Message d'erreur présent\", function () { pm.expect(pm.response.json()).to.have.property(\"erreur\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetClient/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetClient",
+                "999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT UpdateClient/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Identifiant conservé\", function () { pm.expect(pm.response.json().idClient).to.eql(Number(pm.collectionVariables.get(\"clientId\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/UpdateClient/{{clientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "UpdateClient",
+                "{{clientId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nom\": \"Ben Ali\",\n  \"prenom\": \"Sami\",\n  \"email\": \"maj{{$timestamp}}@example.com\",\n  \"telephone\": \"20999999\",\n  \"numPermis\": \"M{{$timestamp}}\",\n  \"dateInscription\": \"2026-10-01\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4 - Equipement",
+      "item": [
+        {
+          "name": "POST AddEquipement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201 Created\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Id généré\", function () { pm.expect(pm.response.json().idEquipement).to.be.a(\"number\"); });",
+                  "pm.collectionVariables.set(\"equipementId\", pm.response.json().idEquipement);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/AddEquipement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "AddEquipement"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"libelle\": \"GPS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "POST addAllEquipement",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 201 Created\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"Liste de 2 éléments\", function () { pm.expect(pm.response.json()).to.have.lengthOf(2); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/addAllEquipement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "addAllEquipement"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\"libelle\": \"Siège bébé\"},\n  {\"libelle\": \"Coffre de toit\"}\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "GET GetEquipement (tous)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Réponse = tableau\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetEquipement",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetEquipement"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetEquipement/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Bon identifiant\", function () { pm.expect(pm.response.json().idEquipement).to.eql(Number(pm.collectionVariables.get(\"equipementId\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetEquipement/{{equipementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetEquipement",
+                "{{equipementId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetEquipement/999999 (inexistant)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404 Not Found\", function () { pm.response.to.have.status(404); });",
+                  "pm.test(\"Message d'erreur présent\", function () { pm.expect(pm.response.json()).to.have.property(\"erreur\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetEquipement/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetEquipement",
+                "999999"
+              ]
+            }
+          }
+        },
+        {
+          "name": "PUT UpdateEquipement/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 200 OK\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Identifiant conservé\", function () { pm.expect(pm.response.json().idEquipement).to.eql(Number(pm.collectionVariables.get(\"equipementId\"))); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/UpdateEquipement/{{equipementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "UpdateEquipement",
+                "{{equipementId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"libelle\": \"GPS connecté\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5 - Suppression (DELETE)",
+      "item": [
+        {
+          "name": "DELETE DeleteVehicule/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204 No Content\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/DeleteVehicule/{{vehiculeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "DeleteVehicule",
+                "{{vehiculeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE DeleteClient/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204 No Content\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/DeleteClient/{{clientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "DeleteClient",
+                "{{clientId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE DeleteEquipement/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204 No Content\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/DeleteEquipement/{{equipementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "DeleteEquipement",
+                "{{equipementId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "DELETE DeleteAgence/{id}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 204 No Content\", function () { pm.response.to.have.status(204); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/DeleteAgence/{{agenceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "DeleteAgence",
+                "{{agenceId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetVehicule/{id} (après suppression)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404 Not Found\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetVehicule/{{vehiculeId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetVehicule",
+                "{{vehiculeId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetClient/{id} (après suppression)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404 Not Found\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetClient/{{clientId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetClient",
+                "{{clientId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetEquipement/{id} (après suppression)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404 Not Found\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetEquipement/{{equipementId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetEquipement",
+                "{{equipementId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET GetAgence/{id} (après suppression)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Statut 404 Not Found\", function () { pm.response.to.have.status(404); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/GetAgence/{{agenceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "GetAgence",
+                "{{agenceId}}"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
